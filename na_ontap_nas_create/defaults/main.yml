@@ -1,0 +1,4 @@
+---
+# defaults file for na-ontap-nas-create
+nas:
+  - { name: , protocol: , vserver: , client: , ro: , rw: , su: , aggr: , size: , share: , }

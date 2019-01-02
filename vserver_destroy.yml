@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  vars_files:
+    - globals.yml
+  vars:
+    input: &input
+      hostname: "{{ netapp_hostname }}"
+      username: "{{ netapp_username }}"
+      password: "{{ netapp_password }}"
+  tasks:
+  - import_role:
+      name: na_ontap_vserver_destroy
+    vars: 
+      <<: *input
