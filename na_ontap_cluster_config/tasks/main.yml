@@ -26,8 +26,8 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ aggrs }}"
-  when: aggrs != None
+    "{{ Aggregates_Setup }}"
+  when: Aggregates_Setup != None
 - name: Remove ports from Default broadcast domain
   na_ontap_broadcast_domain_ports:
     state: absent
@@ -40,8 +40,8 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ ports }}"
-  when: ports != None
+    "{{ Network_Port_Setup }}"
+  when: Network_Port_Setup != None
 - name: Modify Net Port
   na_ontap_net_port:
     state: present
@@ -57,8 +57,8 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ ports }}"
-  when: ports != None
+    "{{ Network_Port_Setup }}"
+  when: Network_Port_Setup != None
 - name: Create Interface Group
   na_ontap_net_ifgrp:
     state: present
@@ -74,8 +74,8 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ ifgrps  }}"
-  when: ifgrps != None
+    "{{ IF_Group_Configuration  }}"
+  when: IF_Group_Configuration != None
 - name: Modify Net Port
   na_ontap_net_port:
     state: present
@@ -89,14 +89,14 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ ifgrps }}"
-  when: ifgrps != None
+    "{{ IF_Group_Configuration }}"
+  when: IF_Group_Configuration != None
 - name: Create VLAN
   na_ontap_net_vlan:
     state: present
     vlanid: "{{ item.id }}"
     node: "{{ item.node }}"
-    parent_interface: "{{ item.parent }}"
+    parent_interface: "{{ item.port }}"
     username: "{{ username }}"
     password: "{{ password }}"
     hostname: "{{ hostname }}"
@@ -104,8 +104,8 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ vlans }}"
-  when: vlans != None
+    "{{ VLAN_Configuration }}"
+  when: VLAN_Configuration != None
 - name: create broadcast domain
   na_ontap_broadcast_domain:
     state: present
@@ -120,8 +120,8 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ bcasts }}"
-  when: bcasts != None
+    "{{ Broadcast_Domain_Configuration }}"
+  when: Broadcast_Domain_Configuration != None
 - name: Create Intercluster Lif
   na_ontap_interface:
     state: present

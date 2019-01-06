@@ -1,9 +1,9 @@
 ---
 - hosts: localhost
   gather_facts: no
-#  vars_files:
+  vars_files:
 #    - demo.yml
-#    - globals.yml
+    - globals.yml
   vars:
     input: &input
       hostname: "{{ netapp_hostname }}"
@@ -20,14 +20,14 @@
       ontapi: 32
       validate_certs: false
   - import_role:
-      name: schmots1.na_ontap_cluster_config
+      name: na_ontap_cluster_config
     vars: 
       <<: *input
-  - import_role:
-      name: schmots1.na_ontap_vserver_create
-    vars:
-      <<: *input
-  - import_role:
-      name: schmots1.na_ontap_nas_create
-    vars: 
-      <<: *input
+#  - import_role:
+#      name: na_ontap_vserver_create
+#    vars:
+#      <<: *input
+#  - import_role:
+#      name: na_ontap_nas_create
+#    vars: 
+#      <<: *input

@@ -1,0 +1,51 @@
+#PLANC-consulting - vsim -  Advanced Configuration Supports NAS CIFS-ONTAP v 9.x
+#export file as a .PRN format
+#save as 
+cluster_name: vsim
+
+netapp_hostname: 172.32.0.182
+netapp_username: admin
+netapp_password: netapp123
+
+license_codes: MDCRSXCUTXKZOFABGAAAAAAAAAAA,GWOCWXCUTXKZOFABGAAAAAAAAAAA,YXZFTXCUTXKZOFABGAAAAAAAAAAA,AJECSXCUTXKZOFABGAAAAAAAAAAA,UBRNVXCUTXKZOFABGAAAAAAAAAAA,IHTYUXCUTXKZOFABGAAAAAAAAAAA,CAYHXPKBFDUFZGABGAAAAAAAAAAA,WSKTAQKBFDUFZGABGAAAAAAAAAAA,OUVWXPKBFDUFZGABGAAAAAAAAAAA,QFATWPKBFDUFZGABGAAAAAAAAAAA,KYMEAQKBFDUFZGABGAAAAAAAAAAA,YDPPZPKBFDUFZGABGAAAAAAAAAAA,SAACGWOUTYNBBGAAAAAAAAAAAAAA
+
+Aggregates_Setup: #requires underscore not spaces and must end with :
+  -  { name: aggr1, node: vsim-01, disk_count: 24, max_raid: 12 } #no '-' in aggr names
+
+Network_Port_Setup: #requires underscore not spaces and must end with :
+  - { node: vsim-01, port: e0e, mtu: 9000 }
+  - { node: vsim-01, port: e0f, mtu: 9000 }
+
+IF_Group_Configuration: #requires underscore not spaces and must end with :
+  - { name: a0a, ports: 'e0e,e0f', node: vsim-01 } #Can be no space  before ,
+  - { name: a0a, ports: 'e0e,e0f', node: vsim-02 } #Can be no space  before ,
+
+VLAN_Configuration: #requires underscore not spaces and must end with :
+  - { id: 100, port: a0a ,node: vsim-01 }
+  - { id: 200, port: a0a ,node: vsim-01 }
+
+Broadcast_Domain_Configuration: #requires underscore not spaces and must end with :
+  - { name: one, mtu: 9000, ports: 'a0a' } #Needs space after ports:
+  - { name: two, mtu: 9000, ports: 'a0a' }
+
+Data_SVMs: #requires underscore not spaces and must end with :
+  - { name: cifs_svm1, root_volume: cluster1_cifs_svm_root, root_volume_aggregate: aggr-1, root_volume_security_style: ntfs, language: en_US.UTF-8, protocol: CIFS }
+
+NFS_Exports: #requires underscore not spaces and must end with :
+  - { vserver: cifs_svm1, name: one, rule_index: , client_match: 0.0.0.0/0, protocol: cifs, ro_rule: any, rw_rule: any, superuser: any, dev: any }
+
+Network_Interface_SVM_LIF_Setup: #requires underscore not spaces and must end with :
+  - { vserver: cifs_svm1,  interface_name: cifs_lif_one, role: data, protocol: CIFS,  home_port: a0a, home_node: vsim-01, address: 192.168.0.130, netmask: 255.255.255.0, gateway: 192.168.0.1, failover_policy: local-only, firewall_policy: , is_auto_revert: TRUE }
+
+Configure_DNS_for_SVM: #requires underscore not spaces and must end with :
+  - { vserver: cifs_svm1, domains: domain.name.net, nameservers: 192.168.0.253 }
+
+CIFS_Server_Create: #requires underscore not spaces and must end with :
+  - { vserver: cifs_svm1, cifs_server_name: cifs-demo, domain: domain.name.net, ou: cn=computers }
+
+Volume_Setup: #requires underscore not spaces and must end with :
+  - { vserver: cifs_svm1, protocol: CIFS, name: cifs_vol2, aggregate: aggr-1, size: 10GB, language: en.UTF-8, volume_security_style: ntfs, junction_path: /, percent_snapshot_space: 5, encrypt: ,space_guarantee: volume } #Needs ',' after protocol: XXX, needs ',' after volume_security_style: xxx, needs ',' after encrypt: xxx
+
+CIFS_Shares: #requires underscore not spaces and must end with :
+  - { vserver: cifs_svm1, share_name: demodata, path: \cifs_vol2\home }
+
