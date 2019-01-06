@@ -25,11 +25,11 @@ VLAN_Configuration: #requires underscore not spaces and must end with :
   - { id: 200, port: a0a ,node: vsim-01 }
 
 Broadcast_Domain_Configuration: #requires underscore not spaces and must end with :
-  - { name: one, mtu: 9000, ports: 'a0a' } #Needs space after ports:
-  - { name: two, mtu: 9000, ports: 'a0a' }
+  - { name: one, mtu: 9000, ports: 'vsim-01:a0a' } #Needs space after ports: and needs proper format for ports "node:port"
+  - { name: two, mtu: 9000, ports: 'vsim-02:a0a' } #Needs space after ports: and needs proper format for ports "node:port"  ## should the name be two?  Shouldn't these both be in 'one'?
 
 Data_SVMs: #requires underscore not spaces and must end with :
-  - { name: cifs_svm1, root_volume: cluster1_cifs_svm_root, root_volume_aggregate: aggr-1, root_volume_security_style: ntfs, language: en_US.UTF-8, protocol: CIFS }
+  - { name: cifs_svm1, root_volume: cluster1_cifs_svm_root, root_volume_aggregate: aggr1, root_volume_security_style: ntfs, language: en_US.UTF-8, protocol: CIFS }
 
 NFS_Exports: #requires underscore not spaces and must end with :
   - { vserver: cifs_svm1, name: one, rule_index: , client_match: 0.0.0.0/0, protocol: cifs, ro_rule: any, rw_rule: any, superuser: any, dev: any }

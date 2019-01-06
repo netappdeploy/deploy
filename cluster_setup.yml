@@ -1,6 +1,11 @@
 ---
 - hosts: localhost
   gather_facts: no
+  vars_prompt:
+   - name: admin_user
+     prompt: Domain admin account (or leave blank to skip)
+   - name: admin_password
+     prompt: Domain admin account password (or leave blank to skip)
   vars_files:
 #    - demo.yml
     - globals.yml
@@ -19,14 +24,14 @@
       https: true
       ontapi: 32
       validate_certs: false
-  - import_role:
-      name: na_ontap_cluster_config
-    vars: 
-      <<: *input
 #  - import_role:
-#      name: na_ontap_vserver_create
-#    vars:
+#      name: na_ontap_cluster_config
+#    vars: 
 #      <<: *input
+  - import_role:
+      name: na_ontap_vserver_create
+    vars:
+      <<: *input
 #  - import_role:
 #      name: na_ontap_nas_create
 #    vars: 

@@ -3,9 +3,9 @@
   na_ontap_svm:
     state: present
     name: "{{ item.name }}"
-    root_volume: "{{ item.name }}_root"
-    root_volume_aggregate: "{{ item.aggr }}"
-    root_volume_security_style: "{{ 'ntfs' if item.protocol == 'cifs' or 'CIFS' else 'unix'}}"
+    root_volume: "{{ item.root_volume }}"
+    root_volume_aggregate: "{{ item.root_volume_aggregate }}"
+    root_volume_security_style: "{{ item.root_volume_security_style }}"
     hostname: "{{ hostname }}"
     username: "{{ username }}"
     password: "{{ password }}"
@@ -13,22 +13,22 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ vservers }}"
+    "{{ Data_SVMs }}"
 - name: Create Interface
   na_ontap_interface:
     state: present
-    interface_name: "{{ item.name }}_mgmt_data_1"
-    home_port: "{{ item.port }}"
-    home_node: "{{ item.node }}"
-    role: data
+    interface_name: "{{ item.interface_name }}"
+    home_port: "{{ item.home_port }}"
+    home_node: "{{ item.home_node }}"
+    role: "{{ item.role }}"
     protocols: "{{ item.protocol }}"
     admin_status: up
-    failover_policy: local-only
+    failover_policy: "{{ item.failover_policy }}"
     firewall_policy: mgmt
-    is_auto_revert: true
+    is_auto_revert: "{{ item.is_auto_revert }}"
     address: "{{ item.address }}"
     netmask: "{{ item.netmask }}"
-    vserver: "{{ item.name }}"
+    vserver: "{{ item.vserver }}"
     hostname: "{{ hostname }}"
     username: "{{ username }}"
     password: "{{ password }}"
@@ -36,13 +36,13 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ vservers }}"
+    "{{ Network_Interface_SVM_LIF_Setup }}"
 - name: Create DNS
   na_ontap_dns:
     state: present
-    vserver: "{{ item.name }}"
-    domains: "{{ item.dns_domains }}"
-    nameservers: "{{ item.dns_nameservers }}"
+    vserver: "{{ item.vserver }}"
+    domains: "{{ item.domains }}"
+    nameservers: "{{ item.nameservers }}"
     hostname: "{{ hostname }}"
     username: "{{ username }}"
     password: "{{ password }}"
@@ -50,17 +50,17 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ vservers }}"
-  when: item.dns_nameservers is defined
+    "{{ Configure_DNS_for_SVM }}"
+  when: Configure_DNS_for_SVM != None
 - name: Create CIFS Server
   na_ontap_cifs_server:
     state: present
-    vserver: "{{ item.name }}"
+    vserver: "{{ item.vserver }}"
     domain: "{{ item.domain }}"
     cifs_server_name: "{{ item.cifs_server_name }}"
     force: "{{ 'false' if item.force is not defined else item.force }}"
-    admin_password: "{{ item.admin_password }}"
-    admin_user_name: "{{ item.admin_user_name }}"
+    admin_password: "{{ admin_password }}"
+    admin_user_name: "{{ admin_user_name }}"
     ou: "{{ item.ou | default(omit)}}"
     service_state: started
     hostname: "{{ hostname }}"
@@ -70,8 +70,8 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ vservers }}"
-  when: item.protocol is search("cifs") or item.protocol is search("CIFS")
+    "{{ CIFS_Server_Create }}"
+  when: CIFS_Server_Create != None
 - name: Create NFS Server
   na_ontap_nfs:
     state: present
