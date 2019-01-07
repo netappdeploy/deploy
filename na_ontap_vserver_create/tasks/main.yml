@@ -90,17 +90,17 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ vservers }}"
-  when: item.protocol is search("nfs")
+    "{{ NFS_Server_Create }}"
+  when: NFS_Server_Create != None
 - name: Setup default rules
   na_ontap_export_policy_rule:
     state: present
     policy_name: default
-    vserver: "{{ item.name }}"
-    client_match: 0.0.0.0/0
-    ro_rule: any
-    rw_rule: "{{ item.rw }}"
-    protocol: any
+    vserver: "{{ item.vserver }}"
+    client_match: "{{ item.client_match }}"
+    ro_rule: "{{ item.ro_rule }}"
+    rw_rule: "{{ item.rw_rule }}"
+    protocol: "{{ item.protocol }}"
     hostname: "{{ hostname }}"
     username: "{{ username }}"
     password: "{{ password }}"
@@ -108,4 +108,5 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ vservers }}"
+    "{{ NFS_Exports }}"
+  when: NFS_Exports != None

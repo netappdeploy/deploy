@@ -38,10 +38,10 @@ Network_Interface_SVM_LIF_Setup: #requires underscore not spaces and must end wi
   - { vserver: cifs_svm1,  interface_name: cifs_lif_one, role: data, protocol: CIFS,  home_port: a0a, home_node: vsim-01, address: 192.168.0.130, netmask: 255.255.255.0, gateway: 192.168.0.1, failover_policy: local-only, firewall_policy: , is_auto_revert: TRUE }
 
 Configure_DNS_for_SVM: #requires underscore not spaces and must end with :
-  - { vserver: cifs_svm1, domains: domain.name.net, nameservers: 192.168.0.253 }
+  - { vserver: cifs_svm1, domains: domain.name.net, nameservers: 172.32.0.40 }
 
 CIFS_Server_Create: #requires underscore not spaces and must end with :
-  - { vserver: cifs_svm1, cifs_server_name: cifs-demo, domain: domain.name.net, ou: cn=computers }
+  - { vserver: cifs_svm1, cifs_server_name: cifs-demo, domain: openstack.local, ou: cn=computers }
 
 Volume_Setup: #requires underscore not spaces and must end with :
   - { vserver: cifs_svm1, protocol: CIFS, name: cifs_vol2, aggregate: aggr-1, size: 10GB, language: en.UTF-8, volume_security_style: ntfs, junction_path: /, percent_snapshot_space: 5, encrypt: ,space_guarantee: volume } #Needs ',' after protocol: XXX, needs ',' after volume_security_style: xxx, needs ',' after encrypt: xxx
