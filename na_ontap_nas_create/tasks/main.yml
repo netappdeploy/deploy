@@ -11,17 +11,17 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ nas }}"
-  when: item.protocol == "nfs"
+    "{{ NFS_Exports }}"
+  when: NFS_Exports != None
 - name: Setup rules
   na_ontap_export_policy_rule:
     state: present
     policy_name: "{{ item.name }}"
     vserver: "{{ item.vserver }}"
-    client_match: "{{ item.client }}"
-    ro_rule: "{{ item.ro }}"
-    rw_rule: "{{ item.rw }}"
-    super_user_security: "{{ item.su }}"
+    client_match: "{{ item.client_match }}"
+    ro_rule: "{{ item.ro_rule }}"
+    rw_rule: "{{ item.rw_rule }}"
+    super_user_security: "{{ item.superuser }}"
     hostname: "{{ hostname }}"
     username: "{{ username }}"
     password: "{{ password }}"
@@ -29,18 +29,20 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ nas }}"
-  when: item.protocol == "nfs"
+    "{{ NFS_Exports }}"
+  when: NFS_Exports != None
 - name: Create volume
   na_ontap_volume:
     state: present
     name: "{{ item.name }}"
-    aggregate_name: "{{ item.aggr }}"
+    aggregate_name: "{{ item.aggregate }}"
     size: "{{ item.size }}"
     size_unit: gb
-    policy: "{{ 'default' if item.name == 'CIFS' or 'cifs' else item.name }}"
+    policy: "{{ 'default' if item.protocol == 'CIFS' or 'cifs' else item.policy }}"
     junction_path: "/{{ item.name }}"
-    space_guarantee: "none"
+    space_guarantee: "{{ item.space_guarantee }}"
+    volume_security_style: "{{ item.volume_security_style }}"
+    percent_snapshot_space: "{{ item.percent_snapshot_space }}"
     vserver: "{{ item.vserver }}"
     hostname: "{{ hostname }}"
     username: "{{ username }}"
@@ -49,12 +51,13 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ nas }}"
+    "{{ Volume_Setup }}"
+  when: Volume_Setup != None
 - name: Create Share
   na_ontap_cifs:
     state: present
-    share_name: "{{ item.share }}"
-    path: "/{{ item.name }}"
+    share_name: "{{ item.share_name }}"
+    path: "{{ item.path }}"
     vserver: "{{ item.vserver }}"
     hostname: "{{ hostname }}"
     username: "{{ username }}"
@@ -63,5 +66,5 @@
     https: true
     validate_certs: false
   with_items:
-    "{{ nas }}"
-  when: item.share is defined
+    "{{ CIFS_Shares }}"
+  when: CIFS_Shares != None

@@ -32,7 +32,7 @@
       name: na_ontap_vserver_create
     vars:
       <<: *input
-#  - import_role:
-#      name: na_ontap_nas_create
-#    vars: 
-#      <<: *input
+  - import_role:
+      name: na_ontap_nas_create
+    vars: 
+      <<: *input
