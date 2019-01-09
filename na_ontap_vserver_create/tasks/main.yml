@@ -14,6 +14,20 @@
     validate_certs: false
   with_items:
     "{{ Data_SVMs }}"
+- name: Setup iSCSI
+  na_ontap_iscsi:
+    state: present
+    service_state: started
+    vserver: "{{ item.name }}"
+    hostname: "{{ hostname }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    ontapi: "{{ ontap_facts.ontap_version }}"
+    https: true
+    validate_certs: false
+  with_items:
+    "{{ Data_SVMs }}"
+  when: item.protocol is search("iscsi") or item.protocol is search("iSCSI")
 - name: Create Interface
   na_ontap_interface:
     state: present
