@@ -1,0 +1,71 @@
+---
+- name: Create iGroup
+  na_ontap_export_policy:
+    state: present
+    name: "{{ item.name }}"
+    vserver: "{{ item.vserver }}"
+    initiator_group_type: "{{ item.initiator_group_type }}"
+    ostype: "{{ item.ostype }}"
+    initiator: "{{ item.initiator }}"
+    hostname: "{{ hostname }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    ontapi: "{{ ontap_facts.ontap_version }}"
+    https: true
+    validate_certs: false
+  with_items:
+    "{{ iGroups }}"
+  when: iGroups != None
+- name: Create volume
+  na_ontap_volume:
+    state: present
+    name: "{{ item.name }}"
+    aggregate_name: "{{ item.aggregate }}"
+    size: "{{ item.size }}" * 1.05
+    size_unit: gb
+    policy: "{{ 'default' if item.protocol == 'CIFS' or 'cifs' else item.policy }}"
+    junction_path: "/{{ item.name }}"
+    space_guarantee: "{{ item.space_guarantee }}"
+    volume_security_style: "{{ item.volume_security_style }}"
+    percent_snapshot_space: "{{ item.percent_snapshot_space }}"
+    vserver: "{{ item.vserver }}"
+    hostname: "{{ hostname }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    ontapi: "{{ ontap_facts.ontap_version }}"
+    https: true
+    validate_certs: false
+  with_items:
+    "{{ Volume_Setup }}"
+  when: Volume_Setup != None
+- name: Lun Create
+  na_ontap_lun:
+    state: present
+    name: "{{ item.name }}"
+    flexvol_name: "{{ item.flexvol_name }}"
+    vserver: "{{ item.vserver }}"
+    size: "{{ item.size }}"
+    size_unit: gb
+    ostype: "{{ item.ostype }}"
+    space_reserver: "{{ item.space_reserve }}"
+    hostname: "{{ hostname }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    ontapi: "{{ ontap_facts.ontap_version }}"
+    https: true
+    validate_certs: false
+  with_items:
+    "{{ LUNS }}"
+  when: LUNS != None
+- name: Create LUN mapping
+  na_ontap_lun_map:
+    state: present
+    initiator_group_name: "{{ item.initiator_group_name }}"
+    path: "{{ item.path }}"
+    vserver: "{{ item.vserver }}"
+    hostname: "{{ hostname }}"
+    username: "{{ username }}"
+    password: "{{ password }}"
+    ontapi: "{{ ontap_facts.ontap_version }}"
+    https: true
+    validate_certs: false
