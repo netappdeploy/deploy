@@ -1,6 +1,6 @@
 ---
 - name: Create iGroup
-  na_ontap_export_policy:
+  na_ontap_igroup:
     state: present
     name: "{{ item.name }}"
     vserver: "{{ item.vserver }}"
