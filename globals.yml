@@ -45,8 +45,14 @@ CIFS_Server_Create: #requires underscore not spaces and must end with :
   - { vserver: cifs_svm1, cifs_server_name: cifs-demo, domain: openstack.local, ou: cn=computers, force: true } # added force: true to allow reuse of server name
 
 Volume_Setup: #requires underscore not spaces and must end with :
-  - { vserver: cifs_svm1, protocol: CIFS, name: cifs_vol2, aggregate: aggr1, size: 10, language: en.UTF-8, volume_security_style: ntfs, junction_path: /, percent_snapshot_space: 5, encrypt: ,space_guarantee: volume } #Needs ',' after protocol: XXX, needs ',' after volume_security_style: xxx, needs ',' after encrypt: xxx, Size must be a number, no GB/TB.  Size is used as GB for vol create
+#  - { vserver: cifs_svm1, protocol: CIFS, name: cifs_vol2, aggregate: aggr1, size: 10, language: en.UTF-8, volume_security_style: ntfs, junction_path: /, percent_snapshot_space: 5, encrypt: ,space_guarantee: volume } #Needs ',' after protocol: XXX, needs ',' after volume_security_style: xxx, needs ',' after encrypt: xxx, Size must be a number, no GB/TB.  Size is used as GB for vol create
+  - { vserver: vserver1, protocol: iSCSI, name: lun_vol, aggregate: aggr1, size: 10, language: en.UTF-8, volume_security_style: unix, junction_path: /, percent_snapshot_space: 0, encrypt: ,space_guarantee: none }
 
 CIFS_Shares: #requires underscore not spaces and must end with :
   - { vserver: cifs_svm1, share_name: demodata, path: /cifs_vol2 } #paths must be given with '/' not '\'.  Also removed /home as it doesn't exist
-
+iGroups:
+ - { name: igroup1, vserver: vserver1, initiator_group_type: iscsi, ostype: linux, initiator: iqn.1994-05.com.redhat:scspa0395855001.rtp.openenglab.netapp.com }
+LUNS:
+ - { name: lun1, flexvol_name: lun_vol, vserver: vserver1, size: 10, ostype: linux, space_reserve: none }
+LUN_Mapping:
+ - { initiator_group_name: igroup1, path: /vol/lun_vol/lun1, vserver: vserver1 }

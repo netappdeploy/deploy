@@ -69,3 +69,6 @@
     ontapi: "{{ ontap_facts.ontap_version }}"
     https: true
     validate_certs: false
+  with_items:
+    "{{ LUN_Mapping }}"
+  when: LUN_Mapping != None
