@@ -21,7 +21,7 @@
     state: present
     name: "{{ item.name }}"
     aggregate_name: "{{ item.aggregate }}"
-    size: "{{ item.size }}" * 1.05
+    size: "{{ (item.size | int * 1.05) | round(0, 'ceil') | int }}"
     size_unit: gb
     policy: "{{ 'default' if item.protocol == 'CIFS' or 'cifs' else item.policy }}"
     junction_path: "/{{ item.name }}"
@@ -47,7 +47,7 @@
     size: "{{ item.size }}"
     size_unit: gb
     ostype: "{{ item.ostype }}"
-    space_reserver: "{{ item.space_reserve }}"
+    space_reserve: "{{ item.space_reserve }}"
     hostname: "{{ hostname }}"
     username: "{{ username }}"
     password: "{{ password }}"

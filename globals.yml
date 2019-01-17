@@ -30,6 +30,7 @@ Broadcast_Domain_Configuration: #requires underscore not spaces and must end wit
 
 Data_SVMs: #requires underscore not spaces and must end with :
   - { name: cifs_svm1, root_volume: cluster1_cifs_svm_root, root_volume_aggregate: aggr1, root_volume_security_style: ntfs, language: en_US.UTF-8, protocol: CIFS }
+  - { name: lun_svm, root_volume: lun_svm_root, root_volume_aggregate: aggr1, root_volume_security_style: unix, language: en_US.UTF-8, protocol: iSCSI }
 
 NFS_Exports: #requires underscore not spaces and must end with :
   - { vserver: cifs_svm1, name: one, rule_index: , client_match: 0.0.0.0/0, protocol: cifs, ro_rule: any, rw_rule: any, superuser: any, dev: any }
@@ -37,6 +38,8 @@ NFS_Exports: #requires underscore not spaces and must end with :
 Network_Interface_SVM_LIF_Setup: #requires underscore not spaces and must end with :
   - { vserver: cifs_svm1,  interface_name: cifs_lif_one, role: data, protocol: CIFS,  home_port: a0a, home_node: vsim-01, address: 192.168.0.130, netmask: 255.255.255.0, gateway: 192.168.0.1, failover_policy: local-only, firewall_policy: , is_auto_revert: TRUE }
   - { vserver: cifs_svm1,  interface_name: cheat, role: data, protocol: CIFS,  home_port: e0d, home_node: vsim-02, address: 172.32.0.200, netmask: 255.255.255.0, gateway: 192.168.0.1, failover_policy: local-only, firewall_policy: , is_auto_revert: TRUE }
+  - { vserver: lun_svm,  interface_name: iscsi1, role: data, protocol: iscsi,  home_port: e0d, home_node: vsim-01, address: 172.32.0.198, netmask: 255.255.255.0, gateway: 172.32.0.1, failover_policy: disabled, firewall_policy: , is_auto_revert: false }
+  - { vserver: lun_svm,  interface_name: iscsi2, role: data, protocol: iscsi,  home_port: e0d, home_node: vsim-02, address: 172.32.0.199, netmask: 255.255.255.0, gateway: 172.32.0.1, failover_policy: disabled, firewall_policy: , is_auto_revert: false }
 
 Configure_DNS_for_SVM: #requires underscore not spaces and must end with :
   - { vserver: cifs_svm1, domains: domain.name.net, nameservers: 172.32.0.40 }
@@ -45,14 +48,14 @@ CIFS_Server_Create: #requires underscore not spaces and must end with :
   - { vserver: cifs_svm1, cifs_server_name: cifs-demo, domain: openstack.local, ou: cn=computers, force: true } # added force: true to allow reuse of server name
 
 Volume_Setup: #requires underscore not spaces and must end with :
-#  - { vserver: cifs_svm1, protocol: CIFS, name: cifs_vol2, aggregate: aggr1, size: 10, language: en.UTF-8, volume_security_style: ntfs, junction_path: /, percent_snapshot_space: 5, encrypt: ,space_guarantee: volume } #Needs ',' after protocol: XXX, needs ',' after volume_security_style: xxx, needs ',' after encrypt: xxx, Size must be a number, no GB/TB.  Size is used as GB for vol create
-  - { vserver: vserver1, protocol: iSCSI, name: lun_vol, aggregate: aggr1, size: 10, language: en.UTF-8, volume_security_style: unix, junction_path: /, percent_snapshot_space: 0, encrypt: ,space_guarantee: none }
+  - { vserver: cifs_svm1, protocol: CIFS, name: cifs_vol2, aggregate: aggr1, size: 10, language: en.UTF-8, volume_security_style: ntfs, junction_path: /, percent_snapshot_space: 5, encrypt: ,space_guarantee: volume } #Needs ',' after protocol: XXX, needs ',' after volume_security_style: xxx, needs ',' after encrypt: xxx, Size must be a number, no GB/TB.  Size is used as GB for vol create
+  - { vserver: lun_svm, protocol: iSCSI, name: lun_vol, aggregate: aggr1, size: 10, language: en.UTF-8, volume_security_style: unix, junction_path: /, percent_snapshot_space: 0, encrypt: ,space_guarantee: none }
 
 CIFS_Shares: #requires underscore not spaces and must end with :
   - { vserver: cifs_svm1, share_name: demodata, path: /cifs_vol2 } #paths must be given with '/' not '\'.  Also removed /home as it doesn't exist
 iGroups:
- - { name: igroup1, vserver: vserver1, initiator_group_type: iscsi, ostype: linux, initiator: iqn.1994-05.com.redhat:scspa0395855001.rtp.openenglab.netapp.com }
+ - { name: igroup1, vserver: lun_svm, initiator_group_type: iscsi, ostype: linux, initiator: 'iqn.1994-05.com.redhat:scspa0395855001.rtp.openenglab.netapp.com' }
 LUNS:
- - { name: lun1, flexvol_name: lun_vol, vserver: vserver1, size: 10, ostype: linux, space_reserve: none }
+ - { name: lun1, flexvol_name: lun_vol, vserver: lun_svm, size: 10, ostype: linux, space_reserve: false }
 LUN_Mapping:
- - { initiator_group_name: igroup1, path: /vol/lun_vol/lun1, vserver: vserver1 }
+ - { initiator_group_name: igroup1, path: /vol/lun_vol/lun1, vserver: lun_svm }

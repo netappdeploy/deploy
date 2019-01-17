@@ -8,7 +8,8 @@
      prompt: Domain admin account password (or leave blank to skip)
   vars_files:
 #    - demo.yml
-    - config/globals.yml
+#    - config/globals.yml
+    - globals.yml
   vars:
     input: &input
       hostname: "{{ netapp_hostname }}"
@@ -34,5 +35,9 @@
       <<: *input
   - import_role:
       name: na_ontap_nas_create
+    vars: 
+      <<: *input
+  - import_role:
+      name: na_ontap_san_create
     vars: 
       <<: *input
