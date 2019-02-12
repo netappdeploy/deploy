@@ -43,7 +43,7 @@
     "{{ Data_SVMs }}"
   when: item.protocol is search("iscsi") or item.protocol is search("iSCSI")
 - name: Modify adapter
-  na_ontap_adapter:
+  na_ontap_ucadapter:
     state: present
     adapter_name: "{{ item.adapter_name }}"
     node_name: "{{ item.node_name }}"
