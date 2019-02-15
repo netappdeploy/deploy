@@ -52,7 +52,7 @@
     hostname: "{{ netapp_hostname }}"
     username: "{{ netapp_username }}"
     password: "{{ netapp_password }}"
-  loop:
+  with_items:
     "{{ FCP_Ports }}"
   when: FCP_Ports != None
 - name: Create Interface
