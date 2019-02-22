@@ -122,6 +122,20 @@
   with_items:
     "{{ Broadcast_Domain_Configuration }}"
   when: Broadcast_Domain_Configuration != None
+- name: Add ports to Broadcast Domain
+  na_ontap_broadcast_domain_port:
+    state: present
+    username: {{ username }}
+    password: {{ password }}
+    hostname: {{ hostname }}
+    ontapi: "{{ ontap_facts.ontap_version }}"
+    https: true
+    validate_certs: false
+    broadcast_domain: "{{ item.name }}"
+    ports: "{{ item.ports }}"
+  with_items:
+    "{{ Broadcast_Domain_Configuration }}"
+  when: Broadcast_Domain_Configuration != None
 - name: Create Intercluster Lif
   na_ontap_interface:
     state: present
