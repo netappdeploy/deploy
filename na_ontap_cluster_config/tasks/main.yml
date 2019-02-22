@@ -125,9 +125,9 @@
 - name: Add ports to Broadcast Domain
   na_ontap_broadcast_domain_port:
     state: present
-    username: {{ username }}
-    password: {{ password }}
-    hostname: {{ hostname }}
+    username: "{{ username }}"
+    password: "{{ password }}"
+    hostname: "{{ hostname }}"
     ontapi: "{{ ontap_facts.ontap_version }}"
     https: true
     validate_certs: false
