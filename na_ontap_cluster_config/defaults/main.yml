@@ -4,7 +4,7 @@ aggrs:
 ports:
 ifgrps:
 vlans:
-bcasts:
+Broadcast_Domain_Configuration:
 inters:
 cluster_name: temp
 autonegotiate: true
