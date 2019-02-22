@@ -123,7 +123,7 @@
     "{{ Broadcast_Domain_Configuration }}"
   when: Broadcast_Domain_Configuration != None
 - name: Add ports to Broadcast Domain
-  na_ontap_broadcast_domain_port:
+  na_ontap_broadcast_domain_ports:
     state: present
     username: "{{ username }}"
     password: "{{ password }}"
