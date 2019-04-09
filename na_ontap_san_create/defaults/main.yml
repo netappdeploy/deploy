@@ -1,3 +1,6 @@
 ---
 # defaults file for na-ontap-san-create
 Volume_Create:
+iGroups:
+LUNS:
+LUN_Mapping:
