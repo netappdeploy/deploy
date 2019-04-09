@@ -1,61 +1,68 @@
-#PLANC-consulting - vsim -  Advanced Configuration Supports NAS CIFS-ONTAP v 9.x
-#export file as a .PRN format
-#save as 
-cluster_name: vsim
+cluster_name: Ansible
 
-netapp_hostname: 172.32.0.182
+netapp_hostname: 10.216.15.116
 netapp_username: admin
-netapp_password: netapp123
+netapp_password: P@ssw0rd
 
-license_codes: MDCRSXCUTXKZOFABGAAAAAAAAAAA,GWOCWXCUTXKZOFABGAAAAAAAAAAA,YXZFTXCUTXKZOFABGAAAAAAAAAAA,AJECSXCUTXKZOFABGAAAAAAAAAAA,UBRNVXCUTXKZOFABGAAAAAAAAAAA,IHTYUXCUTXKZOFABGAAAAAAAAAAA,CAYHXPKBFDUFZGABGAAAAAAAAAAA,WSKTAQKBFDUFZGABGAAAAAAAAAAA,OUVWXPKBFDUFZGABGAAAAAAAAAAA,QFATWPKBFDUFZGABGAAAAAAAAAAA,KYMEAQKBFDUFZGABGAAAAAAAAAAA,YDPPZPKBFDUFZGABGAAAAAAAAAAA,SAACGWOUTYNBBGAAAAAAAAAAAAAA
+license_codes:
+  
 
-Aggregates_Setup: #requires underscore not spaces and must end with :
-  -  { name: aggr1, node: vsim-01, disk_count: 24, max_raid: 12 } #no '-' in aggr names
 
-Network_Port_Setup: #requires underscore not spaces and must end with :
-  - { node: vsim-01, port: e0e, mtu: 9000 }
-  - { node: vsim-01, port: e0f, mtu: 9000 }
+Aggregates_Setup:
+  - { name: Node1_Aggr1, node: Ansible-01, disk_count: 8, max_raid: 16 }
+  - { name: Node2_Aggr1, node: Ansible-02, disk_count: 8, max_raid: 16 }
 
-IF_Group_Configuration: #requires underscore not spaces and must end with :
-  - { name: a0a, ports: 'e0e,e0f', node: vsim-01 } #Can be no space  before ,
-  - { name: a0a, ports: 'e0e,e0f', node: vsim-02 } #Can be no space  before ,
+Network_Port_Setup:
+  - { node: Ansible-01, port: e0e, mtu: 1500 }
+  - { node: Ansible-01, port: e0f, mtu: 1500 }
+#  - { node: Ansible-01, port: e0d, mtu: 1500 }
+  - { node: Ansible-02, port: e0e, mtu: 1500 }
+  - { node: Ansible-02, port: e0f, mtu: 1500 }
+#  - { node: Ansible-02, port: e0d, mtu: 1500 }
 
-VLAN_Configuration: #requires underscore not spaces and must end with :
-  - { id: 100, port: a0a ,node: vsim-01 }
-  - { id: 200, port: a0a ,node: vsim-01 }
 
-Broadcast_Domain_Configuration: #requires underscore not spaces and must end with :
-  - { name: one, mtu: 9000, ports: 'vsim-01:a0a' } #Needs space after ports: and needs proper format for ports "node:port"
-  - { name: two, mtu: 9000, ports: 'vsim-02:a0a' } #Needs space after ports: and needs proper format for ports "node:port"  ## should the name be two?  Shouldn't these both be in 'one'?
+IF_Group_Configuration: #added MTU
+  - { name: a0a, mtu: 1500, ports: 'e0e,e0f', node: Ansible-01 }
+  - { name: a0a, mtu: 1500, ports: 'e0e,e0f', node: Ansible-02 }
 
-Data_SVMs: #requires underscore not spaces and must end with :
-  - { name: cifs_svm1, root_volume: cluster1_cifs_svm_root, root_volume_aggregate: aggr1, root_volume_security_style: ntfs, language: en_US.UTF-8, protocol: CIFS }
-  - { name: lun_svm, root_volume: lun_svm_root, root_volume_aggregate: aggr1, root_volume_security_style: unix, language: en_US.UTF-8, protocol: iSCSI }
 
-NFS_Exports: #requires underscore not spaces and must end with :
-  - { vserver: cifs_svm1, name: one, rule_index: , client_match: 0.0.0.0/0, protocol: cifs, ro_rule: any, rw_rule: any, superuser: any, dev: any }
+VLAN_Configuration:
+  
 
-Network_Interface_SVM_LIF_Setup: #requires underscore not spaces and must end with :
-  - { vserver: cifs_svm1,  interface_name: cifs_lif_one, role: data, protocol: CIFS,  home_port: a0a, home_node: vsim-01, address: 192.168.0.130, netmask: 255.255.255.0, gateway: 192.168.0.1, failover_policy: local-only, firewall_policy: , is_auto_revert: TRUE }
-  - { vserver: cifs_svm1,  interface_name: cheat, role: data, protocol: CIFS,  home_port: e0d, home_node: vsim-02, address: 172.32.0.200, netmask: 255.255.255.0, gateway: 192.168.0.1, failover_policy: local-only, firewall_policy: , is_auto_revert: TRUE }
-  - { vserver: lun_svm,  interface_name: iscsi1, role: data, protocol: iscsi,  home_port: e0d, home_node: vsim-01, address: 172.32.0.198, netmask: 255.255.255.0, gateway: 172.32.0.1, failover_policy: disabled, firewall_policy: , is_auto_revert: false }
-  - { vserver: lun_svm,  interface_name: iscsi2, role: data, protocol: iscsi,  home_port: e0d, home_node: vsim-02, address: 172.32.0.199, netmask: 255.255.255.0, gateway: 172.32.0.1, failover_policy: disabled, firewall_policy: , is_auto_revert: false }
+Broadcast_Domain_Configuration:
+  - { name: CIFS_NFS, mtu: 1500, ports: 'Ansible-01:a0a,Ansible-02:a0a' }
 
-Configure_DNS_for_SVM: #requires underscore not spaces and must end with :
-  - { vserver: cifs_svm1, domains: domain.name.net, nameservers: 172.32.0.40 }
+inters:
+  
 
-CIFS_Server_Create: #requires underscore not spaces and must end with :
-  - { vserver: cifs_svm1, cifs_server_name: cifs-demo, domain: openstack.local, ou: cn=computers, force: true } # added force: true to allow reuse of server name
+Data_SVMs:
+  - { name: Ansible_Test123, root_volume: Ansible_Test123, root_volume_aggregate: Node2_Aggr1, root_volume_security_style: mixed, language: C.UTF-8, protocol: 'NFS,CIFS' }
 
-Volume_Setup: #requires underscore not spaces and must end with :
-  - { vserver: cifs_svm1, protocol: CIFS, name: cifs_vol2, aggregate: aggr1, size: 10, language: en.UTF-8, volume_security_style: ntfs, junction_path: /, percent_snapshot_space: 5, encrypt: ,space_guarantee: volume } #Needs ',' after protocol: XXX, needs ',' after volume_security_style: xxx, needs ',' after encrypt: xxx, Size must be a number, no GB/TB.  Size is used as GB for vol create
-  - { vserver: lun_svm, protocol: iSCSI, name: lun_vol, aggregate: aggr1, size: 10, language: en.UTF-8, volume_security_style: unix, junction_path: /, percent_snapshot_space: 0, encrypt: ,space_guarantee: none }
 
-CIFS_Shares: #requires underscore not spaces and must end with :
-  - { vserver: cifs_svm1, share_name: demodata, path: /cifs_vol2 } #paths must be given with '/' not '\'.  Also removed /home as it doesn't exist
-iGroups:
- - { name: igroup1, vserver: lun_svm, initiator_group_type: iscsi, ostype: linux, initiator: 'iqn.1994-05.com.redhat:scspa0395855001.rtp.openenglab.netapp.com' }
-LUNS:
- - { name: lun1, flexvol_name: lun_vol, vserver: lun_svm, size: 10, ostype: linux, space_reserve: false }
-LUN_Mapping:
- - { initiator_group_name: igroup1, path: /vol/lun_vol/lun1, vserver: lun_svm }
+Network_Interface_SVM_LIF_Setup:
+  - { vserver: Ansible_Test123, interface_name: CIFSNFS, role: data, protocol: CIFS, home_port: e0d, home_node: Ansible-01, address: 10.216.15.117, netmask: 255.255.255.0, gateway: 10.216.15.1, failover_policy: sfo-partner-only, is_auto_revert: FALSE }
+  - { vserver: Ansible_Test123, interface_name: IFGRP_Test, role: data, protocol: CIFS, home_port: a0a, home_node: Ansible-01, address: 10.216.15.106, netmask: 255.255.255.0, gateway: 10.216.15.1, failover_policy: broadcast-domain-wide, is_auto_revert: FALSE }
+
+
+Configure_DNS_for_SVM:
+  - { vserver: Ansible_Test123, domains: services-eng.local, nameservers: 10.216.15.2,10.61.80.122 }
+
+
+CIFS_Server_Create:
+  - { vserver: Ansible_Test123, cifs_server_name: Ansible_CIFSNFS, domain: services-eng.local, ou: cn=computers }
+
+
+NFS_Server_Create:
+- { vserver: Ansible_Test123 }
+ 
+NFS_Exports: #Named export policy after vserver, works for some reason like this name: Raptor
+  - { vserver: Ansible_Test123, name: default, client_match: 0.0.0.0/0, protocol: cifs, ro_rule: any, rw_rule: any, superuser: any }
+  - { vserver: Ansible_Test123, name: default, client_match: 10.216.15.0/24, protocol: nfs, ro_rule: any, rw_rule: any, superuser: any }
+
+Volume_Setup:
+  - { vserver: Ansible_Test123, protocol: CIFS, name: CIFS_Test, aggregate: Node1_Aggr1, size: 10, language: C.UTF-8, volume_security_style: unix, junction_path: /, percent_snapshot_space: 5, space_guarantee: none }
+  - { vserver: Ansible_Test123, protocol: NFS, name: NFS_Test, aggregate: Node1_Aggr1, size: 10, language: C.UTF-8, volume_security_style: unix, junction_path: /, percent_snapshot_space: 5, space_guarantee: none }
+
+CIFS_Shares: #added path
+  - { vserver: Ansible_Test123, share_name: Top_Secret, path: /CIFS_Test}
+
