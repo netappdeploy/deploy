@@ -81,7 +81,8 @@
     state: present
     node: "{{ item.node }}"
     port: "{{ item.name }}"
-    mtu: "{{ mtu }}"
+    #Changed line 85 from "mtu" to "item.mtu"
+    mtu: "{{ item.mtu }}"
     username: "{{ username }}"
     password: "{{ password }}"
     hostname: "{{ hostname }}"
