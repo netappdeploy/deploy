@@ -137,6 +137,10 @@
   with_items:
     "{{ Broadcast_Domain_Configuration }}"
   when: Broadcast_Domain_Configuration != None
+# Pause for 30 seconds, allow IFGRP time to come online.
+- name: Wait 30 seconds for IFGRP configuration
+  pause: 
+    seconds: 30
 - name: Create Intercluster Lif
   na_ontap_interface:
     state: present
