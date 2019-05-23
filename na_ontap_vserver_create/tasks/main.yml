@@ -2,153 +2,146 @@
 - name: Create Vserver
   na_ontap_svm:
     state: present
-    name: "{{ item.name }}"
-    root_volume: "{{ item.root_volume }}"
-    root_volume_aggregate: "{{ item.root_volume_aggregate }}"
-    root_volume_security_style: "{{ item.root_volume_security_style }}"
-    hostname: "{{ hostname }}"
-    username: "{{ username }}"
-    password: "{{ password }}"
-    ontapi: "{{ ontap_facts.ontap_version }}"
+    name: '{{ item.name }}'
+    allowed_protocols: '{{ item.protocol if item.protocol is defined else omit }}'
+    root_volume: "{{ item.root_volume if item.root_volume is defined else item.name + '_root' }}"
+    root_volume_aggregate: '{{ item.root_volume_aggregate }}'
+    root_volume_security_style: '{{ item.root_volume_security_style }}'
+    aggr_list: '{{ item.aggr_list if item.aggr_list is defined else omit }}'
+    language: "{{ (item.language.lower() | replace('-','_')) if item.language is defined else omit }}"
+    hostname: '{{ hostname }}'
+    username: '{{ username }}'
+    password: '{{ password }}'
+    ontapi: '{{ ontap_facts.ontap_version }}'
     https: true
     validate_certs: false
-  with_items:
-    "{{ Data_SVMs }}"
+  with_items: '{{ Data_SVMs }}'
 - name: Setup FCP
   na_ontap_fcp:
     state: present
     service_state: started
-    vserver: "{{ item.name }}"
-    hostname: "{{ hostname }}"
-    username: "{{ username }}"
-    password: "{{ password }}"
-    ontapi: "{{ ontap_facts.ontap_version }}"
+    vserver: '{{ item.name }}'
+    hostname: '{{ hostname }}'
+    username: '{{ username }}'
+    password: '{{ password }}'
+    ontapi: '{{ ontap_facts.ontap_version }}'
     https: true
     validate_certs: false
-  with_items:
-    "{{ Data_SVMs }}"
+  with_items: '{{ Data_SVMs }}'
   when: item.protocol is search("fcp") or item.protocol is search("FCP")
 - name: Setup iSCSI
   na_ontap_iscsi:
     state: present
     service_state: started
-    vserver: "{{ item.name }}"
-    hostname: "{{ hostname }}"
-    username: "{{ username }}"
-    password: "{{ password }}"
-    ontapi: "{{ ontap_facts.ontap_version }}"
+    vserver: '{{ item.name }}'
+    hostname: '{{ hostname }}'
+    username: '{{ username }}'
+    password: '{{ password }}'
+    ontapi: '{{ ontap_facts.ontap_version }}'
     https: true
     validate_certs: false
-  with_items:
-    "{{ Data_SVMs }}"
+  with_items: '{{ Data_SVMs }}'
   when: item.protocol is search("iscsi") or item.protocol is search("iSCSI")
 - name: Modify adapter
   na_ontap_ucadapter:
     state: present
-    adapter_name: "{{ item.adapter_name }}"
-    node_name: "{{ item.node_name }}"
+    adapter_name: '{{ item.adapter_name }}'
+    node_name: '{{ item.node_name }}'
     mode: fc
     type: target
-    hostname: "{{ netapp_hostname }}"
-    username: "{{ netapp_username }}"
-    password: "{{ netapp_password }}"
-  with_items:
-    "{{ FCP_Ports }}"
+    hostname: '{{ netapp_hostname }}'
+    username: '{{ netapp_username }}'
+    password: '{{ netapp_password }}'
+  with_items: '{{ FCP_Ports }}'
   when: FCP_Ports != None
 - name: Create Interface
   na_ontap_interface:
     state: present
-    interface_name: "{{ item.interface_name }}"
-    home_port: "{{ item.home_port }}"
-    home_node: "{{ item.home_node }}"
-    role: "{{ item.role }}"
-    protocols: "{{ item.protocol }}"
+    interface_name: '{{ item.interface_name }}'
+    home_port: '{{ item.home_port }}'
+    home_node: '{{ item.home_node }}'
+    role: '{{ item.role }}'
+    protocols: '{{ item.protocol }}'
     admin_status: up
-    failover_policy: "{{ item.failover_policy }}"
+    failover_policy: '{{ item.failover_policy }}'
     firewall_policy: mgmt
-    is_auto_revert: "{{ item.is_auto_revert }}"
-    address: "{{ item.address }}"
-    netmask: "{{ item.netmask }}"
-    vserver: "{{ item.vserver }}"
-    hostname: "{{ hostname }}"
-    username: "{{ username }}"
-    password: "{{ password }}"
-    ontapi: "{{ ontap_facts.ontap_version }}"
+    is_auto_revert: '{{ item.is_auto_revert }}'
+    address: '{{ item.address }}'
+    netmask: '{{ item.netmask }}'
+    vserver: '{{ item.vserver }}'
+    hostname: '{{ hostname }}'
+    username: '{{ username }}'
+    password: '{{ password }}'
+    ontapi: '{{ ontap_facts.ontap_version }}'
     https: true
     validate_certs: false
-  with_items:
-    "{{ Network_Interface_SVM_LIF_Setup }}"
+  with_items: '{{ Network_Interface_SVM_LIF_Setup }}'
 - name: Create DNS
   na_ontap_dns:
     state: present
-    vserver: "{{ item.vserver }}"
-    domains: "{{ item.domains }}"
-    nameservers: "{{ item.nameservers }}"
-    hostname: "{{ hostname }}"
-    username: "{{ username }}"
-    password: "{{ password }}"
-    ontapi: "{{ ontap_facts.ontap_version }}"
+    vserver: '{{ item.vserver }}'
+    domains: '{{ item.domains }}'
+    nameservers: '{{ item.nameservers }}'
+    hostname: '{{ hostname }}'
+    username: '{{ username }}'
+    password: '{{ password }}'
+    ontapi: '{{ ontap_facts.ontap_version }}'
     https: true
     validate_certs: false
-  with_items:
-    "{{ Configure_DNS_for_SVM }}"
+  with_items: '{{ Configure_DNS_for_SVM }}'
   when: Configure_DNS_for_SVM != None
 - name: Create CIFS Server
   na_ontap_cifs_server:
     state: present
-    vserver: "{{ item.vserver }}"
-    domain: "{{ item.domain }}"
-    cifs_server_name: "{{ item.cifs_server_name }}"
-    force: "{{ 'false' if item.force is not defined else item.force }}"
-    admin_password: "{{ admin_password }}"
-    admin_user_name: "{{ admin_user_name }}"
-    ou: "{{ item.ou | default(omit)}}"
+    vserver: '{{ item.vserver }}'
+    domain: '{{ item.domain }}'
+    cifs_server_name: '{{ item.cifs_server_name }}'
+    force: "{{ item.force if item.force is defined else 'false' }}"
+    admin_password: '{{ admin_password }}'
+    admin_user_name: '{{ admin_user_name }}'
+    ou: '{{ item.ou | default(omit)}}'
     service_state: started
-    hostname: "{{ hostname }}"
-    username: "{{ username }}"
-    password: "{{ password }}"
-    ontapi: "{{ ontap_facts.ontap_version }}"
+    hostname: '{{ hostname }}'
+    username: '{{ username }}'
+    password: '{{ password }}'
+    ontapi: '{{ ontap_facts.ontap_version }}'
     https: true
     validate_certs: false
-  with_items:
-    "{{ CIFS_Server_Create }}"
+  with_items: '{{ CIFS_Server_Create }}'
   when: CIFS_Server_Create != None
 - name: Create NFS Server
   na_ontap_nfs:
     state: present
     service_state: started
-    #Changed line 121 from "item.name" to "item.vserver"
-    vserver: "{{ item.vserver }}"
+    vserver: '{{ item.vserver }}'
     nfsv3: enabled
     nfsv4: disabled
     nfsv41: disabled
     tcp: enabled
     udp: enabled
     vstorage_state: disabled
-    hostname: "{{ hostname }}"
-    username: "{{ username }}"
-    password: "{{ password }}"
-    ontapi: "{{ ontap_facts.ontap_version }}"
+    hostname: '{{ hostname }}'
+    username: '{{ username }}'
+    password: '{{ password }}'
+    ontapi: '{{ ontap_facts.ontap_version }}'
     https: true
     validate_certs: false
-  with_items:
-    "{{ NFS_Server_Create }}"
+  with_items: '{{ NFS_Server_Create }}'
   when: NFS_Server_Create != None
-- name: Setup default rules
+- name: Setup default export rules
   na_ontap_export_policy_rule:
     state: present
     policy_name: default
-    vserver: "{{ item.vserver }}"
-    client_match: "{{ item.client_match }}"
-    ro_rule: "{{ item.ro_rule }}"
-    rw_rule: "{{ item.rw_rule }}"
-    protocol: "{{ item.protocol }}"
-    hostname: "{{ hostname }}"
-    username: "{{ username }}"
-    password: "{{ password }}"
-    ontapi: "{{ ontap_facts.ontap_version }}"
+    vserver: '{{ item.vserver }}'
+    client_match: 0.0.0.0/0
+    ro_rule: any
+    rw_rule: none
+    protocol: any
+    hostname: '{{ hostname }}'
+    username: '{{ username }}'
+    password: '{{ password }}'
+    ontapi: '{{ ontap_facts.ontap_version }}'
     https: true
     validate_certs: false
-  with_items:
-    "{{ NFS_Exports }}"
-  when: NFS_Exports != None
+  with_items: '{{ Data_SVMs }}'
+  when: item.protocol.lower() is search("nfs") and NFS_Exports == None
