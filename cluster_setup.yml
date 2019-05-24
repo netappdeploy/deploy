@@ -7,7 +7,7 @@
     - name: admin_password
       prompt: AD Domain admin account password (or leave blank to skip)
   vars_files:
-    - globals.yml
+    - config/globals.yml
   vars:
     input: &input
       hostname: '{{ netapp_hostname }}'
