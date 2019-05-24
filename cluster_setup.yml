@@ -2,42 +2,37 @@
 - hosts: localhost
   gather_facts: no
   vars_prompt:
-   - name: admin_user_name
-     prompt: Domain admin account (or leave blank to skip)
-   - name: admin_password
-     prompt: Domain admin account password (or leave blank to skip)
+    - name: admin_user_name
+      prompt: AD Domain admin account (or leave blank to skip)
+    - name: admin_password
+      prompt: AD Domain admin account password (or leave blank to skip)
   vars_files:
-#    - demo.yml
-    - config/globals.yml
-#    - globals.yml
+    - globals.yml
   vars:
     input: &input
-      hostname: "{{ netapp_hostname }}"
-      username: "{{ netapp_username }}"
-      password: "{{ netapp_password }}"
+      hostname: '{{ netapp_hostname }}'
+      username: '{{ netapp_username }}'
+      password: '{{ netapp_password }}'
   tasks:
-  - name: Get Ontapi version
-    na_ontap_gather_facts:
-      state: info
-      hostname: "{{ hostname }}"
-      username: "{{ username }}"
-      password: "{{ password }}"
-      https: true
-      ontapi: 32
-      validate_certs: false
-  - import_role:
-      name: na_ontap_cluster_config
-    vars: 
-      <<: *input
-  - import_role:
-      name: na_ontap_vserver_create
-    vars:
-      <<: *input
-  - import_role:
-      name: na_ontap_nas_create
-    vars: 
-      <<: *input
-  - import_role:
-      name: na_ontap_san_create
-    vars: 
-      <<: *input
+    - name: Get ONTAP facts
+      na_ontap_gather_facts:
+        state: info
+        <<: *input
+        https: true
+        validate_certs: false
+    - import_role:
+        name: na_ontap_cluster_config
+      vars:
+        <<: *input
+    - import_role:
+        name: na_ontap_vserver_create
+      vars:
+        <<: *input
+    - import_role:
+        name: na_ontap_nas_create
+      vars:
+        <<: *input
+    - import_role:
+        name: na_ontap_san_create
+      vars:
+        <<: *input
