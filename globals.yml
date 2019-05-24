@@ -4,7 +4,7 @@ netapp_hostname: 10.216.15.225
 netapp_username: admin
 netapp_password: P@ssw0rd
 
-license_codes: CAYHXPKBFDUFZGABGAAAAAAAAAAA, QFATWPKBFDUFZGABGAAAAAAAAAAA
+license_codes: 
 
 
 Aggregates_Setup:
