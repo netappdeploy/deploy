@@ -22,7 +22,6 @@
     aggregate_name: '{{ item.aggregate }}'
     size: '{{ item.size }}'
     size_unit: gb
-    policy: '{{ item.policy }}'
     junction_path: '/{{ item.name }}'
     space_guarantee: '{{ item.space_guarantee }}'
     volume_security_style: '{{ item.volume_security_style }}'
