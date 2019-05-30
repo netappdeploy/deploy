@@ -89,7 +89,7 @@
     https: true
     validate_certs: false
   with_items: '{{ Configure_DNS_for_SVM }}'
-  when: Configure_DNS_for_SVM != None
+  when: Configure_DNS_for_SVM is defined and Configure_DNS_for_SVM != None
 - name: Create CIFS Server
   na_ontap_cifs_server:
     state: present
