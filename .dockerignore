@@ -1,0 +1,5 @@
+**/vars/*
+**/.git
+Dockerfile
+**/.gitignore
+Ansible_Playbook_Run.ps1

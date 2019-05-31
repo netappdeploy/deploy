@@ -1,9 +1,15 @@
-#Ansible enviornment setup for NetApp modules
-#Version 1.0
 FROM centos:7
+#FROM centos/python-36-centos7
 
-MAINTAINER Andy Mason version: 1.1
+LABEL version="1.2"
+LABEL maintainer="Andy Mason"
+LABEL description="Ansible environment setup for NetApp modules"
 
-RUN yum install -y epel-release && yum install -y python python-pip git && pip install --upgrade pip && pip install ansible && pip install netapp-lib && pip install solidfire-sdk-python && git clone http://github.com/netappdeploy/deploy.git
+RUN yum update git && yum install -y epel-release && yum install -y python python-pip git && pip install --upgrade pip && pip install ansible && pip install netapp-lib
+# && git clone --single-branch --branch dockerupdates http://github.com/jasnic02/deploy.git /deploy
+# && pip install solidfire-sdk-python
+# && git clone http://github.com/netappdeploy/deploy.git
+
+ADD . /deploy
 
 CMD ansible-playbook /deploy/cluster_setup.yml
