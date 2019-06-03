@@ -53,7 +53,7 @@
     username: '{{ netapp_username }}'
     password: '{{ netapp_password }}'
   with_items: '{{ FCP_Ports }}'
-  when: FCP_Ports != None
+  when: FCP_Ports is defined
 - name: Create Interface
   na_ontap_interface:
     state: present
@@ -89,7 +89,7 @@
     https: true
     validate_certs: false
   with_items: '{{ Configure_DNS_for_SVM }}'
-  when: Configure_DNS_for_SVM is defined and Configure_DNS_for_SVM != None
+  when: Configure_DNS_for_SVM is defined
 - name: Create CIFS Server
   na_ontap_cifs_server:
     state: present
@@ -108,7 +108,7 @@
     https: true
     validate_certs: false
   with_items: '{{ CIFS_Server_Create }}'
-  when: CIFS_Server_Create != None
+  when: CIFS_Server_Create is defined
 - name: Create NFS Server
   na_ontap_nfs:
     state: present
@@ -127,7 +127,7 @@
     https: true
     validate_certs: false
   with_items: '{{ NFS_Server_Create }}'
-  when: NFS_Server_Create != None
+  when: NFS_Server_Create is defined
 - name: Setup default export rules
   na_ontap_export_policy_rule:
     state: present

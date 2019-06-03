@@ -14,7 +14,7 @@
     https: true
     validate_certs: false
   with_items: '{{ iGroups }}'
-  when: iGroups != None
+  when: iGroups is defined
 - name: Create volume
   na_ontap_volume:
     state: present
@@ -34,7 +34,7 @@
     https: true
     validate_certs: false
   with_items: '{{ Volume_Setup }}'
-  when: Volume_Setup != None and (item.protocol.lower() == 'fcp' or item.protocol.lower() == 'iscsi')
+  when: Volume_Setup is defined and (item.protocol.lower() == 'fcp' or item.protocol.lower() == 'iscsi')
 - name: Lun Create
   na_ontap_lun:
     state: present
@@ -52,7 +52,7 @@
     https: true
     validate_certs: false
   with_items: '{{ LUNS }}'
-  when: LUNS != None
+  when: LUNS is defined
 - name: Create LUN mapping
   na_ontap_lun_map:
     state: present
@@ -66,4 +66,4 @@
     https: true
     validate_certs: false
   with_items: '{{ LUN_Mapping }}'
-  when: LUN_Mapping != None
+  when: LUN_Mapping is defined

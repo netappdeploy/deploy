@@ -26,7 +26,7 @@
     https: true
     validate_certs: false
   with_items: '{{ Aggregates_Setup }}'
-  when: Aggregates_Setup != None
+  when: Aggregates_Setup is defined
 - name: Remove ports from Default broadcast domain
   na_ontap_broadcast_domain_ports:
     state: absent
@@ -39,7 +39,7 @@
     https: true
     validate_certs: false
   with_items: '{{ Network_Port_Setup }}'
-  when: Network_Port_Setup != None
+  when: Network_Port_Setup is defined
 - name: Modify Net Port
   na_ontap_net_port:
     state: present
@@ -55,7 +55,7 @@
     https: true
     validate_certs: false
   with_items: '{{ Network_Port_Setup }}'
-  when: Network_Port_Setup != None
+  when: Network_Port_Setup is defined
 - name: Create Interface Group
   na_ontap_net_ifgrp:
     state: present
@@ -71,7 +71,7 @@
     https: true
     validate_certs: false
   with_items: '{{ IF_Group_Configuration  }}'
-  when: IF_Group_Configuration != None
+  when: IF_Group_Configuration is defined
   register: ifgrpstatus
 - name: Modify Net Port
   na_ontap_net_port:
@@ -86,7 +86,7 @@
     https: true
     validate_certs: false
   with_items: '{{ IF_Group_Configuration }}'
-  when: IF_Group_Configuration != None
+  when: IF_Group_Configuration is defined
   register: ifgrpportstatus
 - name: Wait 30 seconds for IFGRP configuration
   pause:
@@ -105,7 +105,7 @@
     https: true
     validate_certs: false
   with_items: '{{ VLAN_Configuration }}'
-  when: VLAN_Configuration != None
+  when: VLAN_Configuration is defined
 - name: Create broadcast domain
   na_ontap_broadcast_domain:
     state: present
@@ -120,7 +120,7 @@
     https: true
     validate_certs: false
   with_items: '{{ Broadcast_Domain_Configuration }}'
-  when: Broadcast_Domain_Configuration != None
+  when: Broadcast_Domain_Configuration is defined
 - name: Add ports to Broadcast Domain
   na_ontap_broadcast_domain_ports:
     state: present
@@ -133,7 +133,7 @@
     broadcast_domain: '{{ item.name }}'
     ports: '{{ item.ports }}'
   with_items: '{{ Broadcast_Domain_Configuration }}'
-  when: Broadcast_Domain_Configuration != None
+  when: Broadcast_Domain_Configuration is defined
 - name: Create Intercluster Lif
   na_ontap_interface:
     state: present
@@ -154,4 +154,4 @@
     https: true
     validate_certs: false
   with_items: '{{ inters }}'
-  when: inters != None
+  when: inters is defined
