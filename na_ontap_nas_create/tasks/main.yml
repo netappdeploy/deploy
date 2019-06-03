@@ -11,7 +11,7 @@
     https: true
     validate_certs: false
   with_items: '{{ NFS_Exports }}'
-  when: NFS_Exports != None
+  when: NFS_Exports is defined
 - name: Setup rules
   na_ontap_export_policy_rule:
     state: present
@@ -29,7 +29,7 @@
     https: true
     validate_certs: false
   with_items: '{{ NFS_Exports }}'
-  when: NFS_Exports != None
+  when: NFS_Exports is defined
 - name: Create volume
   na_ontap_volume:
     state: present
@@ -51,7 +51,7 @@
     validate_certs: false
   with_items: '{{ Volume_Setup }}'
   when:
-    - Volume_Setup != None and (item.protocol.lower() == 'cifs' or item.protocol.lower() == 'nfs')
+    - Volume_Setup is defined and (item.protocol.lower() == 'cifs' or item.protocol.lower() == 'nfs')
 - name: Create Share
   na_ontap_cifs:
     state: present
@@ -65,4 +65,4 @@
     https: true
     validate_certs: false
   with_items: '{{ CIFS_Shares }}'
-  when: CIFS_Shares != None
+  when: CIFS_Shares is defined
