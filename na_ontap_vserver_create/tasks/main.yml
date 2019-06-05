@@ -19,9 +19,9 @@
 - name: Setup FCP
   na_ontap_fcp:
     state: present
-    service_state: started
+    status: up
     vserver: '{{ item.name }}'
-    hostname: '{{ hostname }}'
+    hostname: '{{ hostname }}'    
     username: '{{ username }}'
     password: '{{ password }}'
     ontapi: '{{ ontap_facts.ontap_version }}'
@@ -42,18 +42,6 @@
     validate_certs: false
   with_items: '{{ Data_SVMs }}'
   when: item.protocol is search("iscsi") or item.protocol is search("iSCSI")
-- name: Modify adapter
-  na_ontap_ucadapter:
-    state: present
-    adapter_name: '{{ item.adapter_name }}'
-    node_name: '{{ item.node_name }}'
-    mode: fc
-    type: target
-    hostname: '{{ netapp_hostname }}'
-    username: '{{ netapp_username }}'
-    password: '{{ netapp_password }}'
-  with_items: '{{ FCP_Ports }}'
-  when: FCP_Ports is defined and FCP_Ports != None
 - name: Create Interface
   na_ontap_interface:
     state: present
@@ -64,10 +52,10 @@
     protocols: '{{ item.protocol }}'
     admin_status: up
     failover_policy: '{{ item.failover_policy }}'
-    firewall_policy: mgmt
-    is_auto_revert: '{{ item.is_auto_revert }}'
-    address: '{{ item.address }}'
-    netmask: '{{ item.netmask }}'
+    firewall_policy: "{{ 'mgmt' if item.protocol != 'fcp' else omit }}"
+    is_auto_revert: '{{ item.is_auto_revert if item.is_auto_revert is defined else omit }}'
+    address: '{{ item.address if item.netmask is defined else omit }}'
+    netmask: '{{ item.netmask if item.netmask is defined else omit }}'
     vserver: '{{ item.vserver }}'
     hostname: '{{ hostname }}'
     username: '{{ username }}'
