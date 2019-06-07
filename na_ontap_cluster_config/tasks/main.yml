@@ -30,13 +30,13 @@
 - name: Modify adapter
   na_ontap_ucadapter:
     state: present
-    adapter_name: '{{ item.adapter_name }}'
-    node_name: '{{ item.node_name }}'
+    adapter_name: '{{ item.port }}'
+    node_name: '{{ item.node }}'
     mode: fc
     type: target
-    hostname: '{{ netapp_hostname }}'
-    username: '{{ netapp_username }}'
-    password: '{{ netapp_password }}'
+    hostname: '{{ hostname }}'
+    username: '{{ username }}'
+    password: '{{ password }}'
     https: true
     validate_certs: false
   with_items: '{{ FCP_Ports }}'
