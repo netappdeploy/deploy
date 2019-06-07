@@ -52,7 +52,7 @@
     protocols: '{{ item.protocol }}'
     admin_status: up
     failover_policy: '{{ item.failover_policy }}'
-    firewall_policy: "{{ 'mgmt' if item.protocol != 'fcp' else omit }}"
+    firewall_policy: "{{ 'mgmt' if item.protocol != 'FCP' else omit }}"
     is_auto_revert: '{{ item.is_auto_revert if item.is_auto_revert is defined else omit }}'
     address: '{{ item.address if item.netmask is defined else omit }}'
     netmask: '{{ item.netmask if item.netmask is defined else omit }}'
