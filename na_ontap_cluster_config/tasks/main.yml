@@ -37,6 +37,7 @@
     hostname: '{{ hostname }}'
     username: '{{ username }}'
     password: '{{ password }}'
+    ontapi: '{{ ontap_facts.ontap_version }}'
     https: true
     validate_certs: false
   with_items: '{{ FCP_Ports }}'
