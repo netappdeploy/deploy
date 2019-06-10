@@ -38,7 +38,7 @@
     size: '{{ item.size }}'
     size_unit: gb
     policy: "{{ 'default' if item.protocol.lower() == 'cifs' or item.policy is not defined else item.policy }}"
-    junction_path: '/{{ item.name }}'
+    junction_path: '{{ item.junction_path }}'
     space_guarantee: '{{ item.space_guarantee }}'
     volume_security_style: '{{ item.volume_security_style }}'
     percent_snapshot_space: '{{ item.percent_snapshot_space }}'
@@ -50,8 +50,7 @@
     https: true
     validate_certs: false
   with_items: '{{ Volume_Setup }}'
-  when:
-    - Volume_Setup is defined and Volume_Setup != None and (item.protocol.lower() == 'cifs' or item.protocol.lower() == 'nfs')
+  when: Volume_Setup is defined and Volume_Setup != None and (item.protocol.lower() == 'cifs' or item.protocol.lower() == 'nfs')
 - name: Create Share
   na_ontap_cifs:
     state: present
