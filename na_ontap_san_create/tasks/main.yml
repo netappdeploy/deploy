@@ -22,7 +22,7 @@
     aggregate_name: '{{ item.aggregate }}'
     size: '{{ item.size }}'
     size_unit: gb
-    junction_path: '/{{ item.name }}'
+    junction_path: ''
     space_guarantee: '{{ item.space_guarantee }}'
     volume_security_style: '{{ item.volume_security_style }}'
     percent_snapshot_space: '{{ item.percent_snapshot_space }}'
