@@ -7,7 +7,7 @@
     - name: admin_password
       prompt: AD Domain admin account password (or leave blank to skip)
   vars_files:
-    - "{{ path_to_vars_file if path_to_vars_file is defined else 'vars/globals.yml' }}"
+    - "{{ path_to_vars_file | default('vars/globals.yml') }}"
   vars:
     input: &input
       hostname: '{{ netapp_hostname }}'

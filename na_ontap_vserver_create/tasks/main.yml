@@ -1,13 +1,14 @@
 ---
+# tasks file for na-ontap-vserver-create
 - name: Create Vserver
   na_ontap_svm:
     state: present
     name: '{{ item.name }}'
-    allowed_protocols: '{{ item.protocol if item.protocol is defined else omit }}'
-    root_volume: "{{ item.root_volume if item.root_volume is defined else item.name + '_root' }}"
+    allowed_protocols: '{{ item.protocol | default(omit) }}'
+    root_volume: "{{ item.root_volume | default(item.name + '_root') }}"
     root_volume_aggregate: '{{ item.root_volume_aggregate }}'
     root_volume_security_style: '{{ item.root_volume_security_style }}'
-    aggr_list: '{{ item.aggr_list if item.aggr_list is defined else omit }}'
+    aggr_list: '{{ item.aggr_list | default(omit) }}'
     language: "{{ (item.language.lower() | replace('-','_')) if item.language is defined else omit }}"
     hostname: '{{ hostname }}'
     username: '{{ username }}'
@@ -16,12 +17,48 @@
     https: true
     validate_certs: false
   with_items: '{{ Data_SVMs }}'
+# - name: Validate destination FlexVol
+#   na_ontap_volume:
+#     state: present
+#     name: '{{ item.1.source }}_m{{ item.0 + 1 }}'
+#     aggregate_name: '{{ item.1.destination }}'
+#     size: 20
+#     size_unit: mb
+#     type: DP
+#     vserver: '{{ item.1.vserver }}'
+#     hostname: '{{ hostname }}'
+#     username: '{{ username }}'
+#     password: '{{ password }}'
+#     ontapi: '{{ ontap_facts.ontap_version }}'
+#     https: true
+#     validate_certs: false
+#   with_indexed_items: '{{ SVMLSMirrors }}'
+#   when: SVMLSMirrors is defined and SVMLSMirrors != None
+# - name: Create SnapMirror
+#   na_ontap_snapmirror:
+#     state: present
+#     source_path: '{{ cluster_name }}://{{ item.1.vserver }}/{{ item.1.source }}'
+#     source_vserver: '{{ item.1.vserver }}'
+#     source_volume: '{{ item.1.source }}'
+#     destination_path: '{{ cluster_name }}://{{ item.1.vserver }}/{{ item.1.source }}_m{{ item.0 + 1 }}'
+#     destination_vserver: '{{ item.1.vserver }}'
+#     destination_volume: '{{ item.1.source }}_m{{ item.0 + 1 }}'
+#     relationship_type: load_sharing
+#     schedule: '{{ item.1.schedule }}'
+#     hostname: '{{ hostname }}'
+#     username: '{{ username }}'
+#     password: '{{ password }}'
+#     ontapi: '{{ ontap_facts.ontap_version }}'
+#     https: true
+#     validate_certs: false
+#   with_indexed_items: '{{ SVMLSMirrors }}'
+#   when: SVMLSMirrors is defined and SVMLSMirrors != None
 - name: Setup FCP
   na_ontap_fcp:
     state: present
     status: up
     vserver: '{{ item.name }}'
-    hostname: '{{ hostname }}'    
+    hostname: '{{ hostname }}'
     username: '{{ username }}'
     password: '{{ password }}'
     ontapi: '{{ ontap_facts.ontap_version }}'
@@ -53,9 +90,9 @@
     admin_status: up
     failover_policy: '{{ item.failover_policy }}'
     firewall_policy: "{{ 'mgmt' if item.protocol != 'FCP' else omit }}"
-    is_auto_revert: '{{ item.is_auto_revert if item.is_auto_revert is defined else omit }}'
-    address: '{{ item.address if item.netmask is defined else omit }}'
-    netmask: '{{ item.netmask if item.netmask is defined else omit }}'
+    is_auto_revert: '{{ item.is_auto_revert | default(omit) }}'
+    address: '{{ item.address | default(omit) }}'
+    netmask: '{{ item.netmask | default(omit) }}'
     vserver: '{{ item.vserver }}'
     hostname: '{{ hostname }}'
     username: '{{ username }}'
@@ -84,7 +121,7 @@
     vserver: '{{ item.vserver }}'
     domain: '{{ item.domain }}'
     cifs_server_name: '{{ item.cifs_server_name }}'
-    force: "{{ item.force if item.force is defined else 'false' }}"
+    force: "{{ item.force | default('false') }}"
     admin_password: '{{ admin_password }}'
     admin_user_name: '{{ admin_user_name }}'
     ou: '{{ item.ou | default(omit)}}'
