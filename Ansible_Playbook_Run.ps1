@@ -20,6 +20,7 @@ $testVarsFilePath = {
         return $false
     }
 
+    Write-Host -ForegroundColor Yellow 'Valid .yml file specified.'
     return $true
 }
 
