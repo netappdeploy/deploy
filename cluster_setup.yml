@@ -2,17 +2,23 @@
 - hosts: localhost
   gather_facts: no
   vars_prompt:
+    - name: netapp_prompted_password
+      prompt: NetApp cluster admin password
+      private: yes
+      confirm: yes
     - name: admin_user_name
       prompt: AD Domain admin account (or leave blank to skip)
     - name: admin_password
       prompt: AD Domain admin account password (or leave blank to skip)
+      private: yes
+      confirm: yes
   vars_files:
-    - [ 'config/globals.yml', 'globals.yml' ]
+    - 'vars/globals.yml'
   vars:
     input: &input
       hostname: '{{ netapp_hostname }}'
       username: '{{ netapp_username }}'
-      password: '{{ netapp_password }}'
+      password: '{{ netapp_prompted_password }}'
       https: true
       validate_certs: false
   tasks:

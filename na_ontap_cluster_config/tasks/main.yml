@@ -77,7 +77,7 @@
     distribution_function: '{{ distribution_function }}'
     name: '{{ item.name }}'
     ports: '{{ item.ports }}'
-    mode: '{{ item.mode if item.mode is defined else ifgrp_mode }}'
+    mode: '{{ item.mode | default(ifgrp_mode) }}'
     node: '{{ item.node}}'
     username: '{{ username }}'
     password: '{{ password }}'

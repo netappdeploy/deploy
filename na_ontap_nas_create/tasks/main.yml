@@ -1,4 +1,5 @@
 ---
+# tasks file for na-ontap-nas-create
 - name: Create Policy
   na_ontap_export_policy:
     state: present
@@ -17,7 +18,7 @@
     state: present
     policy_name: '{{ item.name }}'
     vserver: '{{ item.vserver }}'
-    rule_index: '{{ item.rule_index if item.rule_index is defined else omit }}'
+    rule_index: '{{ item.rule_index | default(omit) }}'
     client_match: '{{ item.client_match }}'
     ro_rule: '{{ item.ro_rule }}'
     rw_rule: '{{ item.rw_rule }}'
