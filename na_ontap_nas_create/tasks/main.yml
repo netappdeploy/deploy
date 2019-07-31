@@ -39,7 +39,7 @@
     size: '{{ item.size }}'
     size_unit: gb
     policy: "{{ 'default' if item.protocol.lower() == 'cifs' or item.policy is not defined else item.policy }}"
-    junction_path: '{{ item.junction_path }}'
+    junction_path: '{{ ("/" + item.name) if item.junction_path == "/" else item.junction_path }}'
     space_guarantee: '{{ item.space_guarantee }}'
     volume_security_style: '{{ item.volume_security_style }}'
     percent_snapshot_space: '{{ item.percent_snapshot_space }}'
