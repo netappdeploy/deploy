@@ -29,3 +29,5 @@ while (! $testVarsFilePath.InvokeReturnAsIs($VarsFilePath)) {
 }
 
 & docker run --rm -it -v "$( $VarsFilePath ):/deploy/vars/globals.yml" deploy
+
+Read-Host -Prompt "Press Enter to exit"
