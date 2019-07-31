@@ -89,8 +89,8 @@
     protocols: '{{ item.protocol }}'
     admin_status: up
     failover_policy: '{{ item.failover_policy }}'
-    firewall_policy: "{{ 'mgmt' if item.protocol != 'FCP' else omit }}"
-    is_auto_revert: '{{ item.is_auto_revert | default(omit) }}'
+    firewall_policy: "{{ item.firewall_policy | default('data') }}"
+    is_auto_revert: '{{ item.is_auto_revert }}'
     address: '{{ item.address | default(omit) }}'
     netmask: '{{ item.netmask | default(omit) }}'
     vserver: '{{ item.vserver }}'
