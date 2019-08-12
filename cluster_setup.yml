@@ -8,6 +8,7 @@
       confirm: yes
     - name: admin_user_name
       prompt: AD Domain admin account (or leave blank to skip)
+      private: no
     - name: admin_password
       prompt: AD Domain admin account password (or leave blank to skip)
       private: yes
