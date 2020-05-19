@@ -4,7 +4,7 @@
   na_ontap_svm:
     state: present
     name: '{{ item.name }}'
-    allowed_protocols: '{{ item.protocol | default(omit) }}'
+    allowed_protocols: '{{ item.protocol.lower() | default(omit) }}'
     root_volume: "{{ item.root_volume | default(item.name + '_root') }}"
     root_volume_aggregate: '{{ item.root_volume_aggregate }}'
     root_volume_security_style: '{{ item.root_volume_security_style }}'
