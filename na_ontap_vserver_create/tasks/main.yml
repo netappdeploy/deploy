@@ -65,7 +65,7 @@
     https: true
     validate_certs: false
   with_items: '{{ Data_SVMs }}'
-  when: item.protocol is search("fcp") or item.protocol is search("FCP")
+  when: item.protocol.lower() is search("fcp")
 - name: Setup iSCSI
   na_ontap_iscsi:
     state: present
@@ -78,7 +78,7 @@
     https: true
     validate_certs: false
   with_items: '{{ Data_SVMs }}'
-  when: item.protocol is search("iscsi") or item.protocol is search("iSCSI")
+  when: item.protocol.lower() is search("iscsi")
 - name: Create Interface
   na_ontap_interface:
     state: present
@@ -113,6 +113,7 @@
     ontapi: '{{ ontap_facts.ontap_version }}'
     https: true
     validate_certs: false
+    skip_validation: true
   with_items: '{{ Configure_DNS_for_SVM }}'
   when: Configure_DNS_for_SVM is defined and Configure_DNS_for_SVM != None
 - name: Create CIFS Server
